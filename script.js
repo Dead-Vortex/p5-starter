@@ -12,6 +12,7 @@ function draw() {
   background(30);
   myBall.update();   // Calculate physics
   myBall.checkKeys(); // Check for keyboard input
+  myBall.loopEdges();
   myBall.display();    // Draw the ball
 }
 
@@ -55,6 +56,18 @@ class Ball {
     
     // 5. Reset acceleration for the next frame
     this.acc.mult(0);
+  }
+
+  loopEdges() {
+    if(this.pos.x < -width) {
+      this.pos.x = width;
+    } else if(this.pos.x > width) {
+      this.pos.x = -width;
+    } else if(this.pos.y < -height) {
+      this.pos.y = height;
+    } else if(this.pos.y > height) {
+      this.pos.y = -height;
+    }
   }
 
   display() {
