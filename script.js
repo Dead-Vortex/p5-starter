@@ -1,39 +1,58 @@
 //preview: python -m http.server
 
-let myBall;
+let ballsArr = [];
 
 function setup() {
   createCanvas(windowWidth-100, windowHeight-100);
   background(30);
-  myBall = new Ball(width / 2, height / 2, 40);
+  for(let i = 0; i < 50; i++) {
+    ballsArr.push(new Ball(random(width), random(height), random(200), random(255), random(255), random(255), random(-5, 15)));
+  }
+  
+  //myBall = new Ball(width / 2, height / 2, 40);
 }
 
 function draw() {
   background(30);
-  myBall.update();   // Calculate physics
-  myBall.checkKeys(); // Check for keyboard input
-  myBall.loopEdges();
-  myBall.display();    // Draw the ball
+  for(let i = 0; i < ballsArr.length; i++) {
+    ballsArr[i].update();
+    ballsArr[i].checkKeys();
+    ballsArr[i].loopEdges();
+    //ballsArr[i].dvdEdges();
+    ballsArr[i].display();
+  }
+  // myBall.update();   // Calculate physics
+  // myBall.checkKeys(); // Check for keyboard input
+  // myBall.loopEdges();
+  // myBall.display();    // Draw the ball
 }
 
 class Ball {
-  constructor(x, y, r) {
+  constructor(x, y, radius, r, g, b, speed) {
     this.pos = createVector(x, y);
     this.vel = createVector(0, 0);
     this.acc = createVector(0, 0);
-    this.r = r;
+    this.speed = speed
+    this.r = radius;
     this.topSpeed = 60;
-    this.friction = 0.99; 
+    this.friction = 0.99;
+    this.red = r;
+    this.green = g;
+    this.blue = b;
+    // console.log("------")
+    // console.log(r);
+    // console.log(g);
+    // console.log(b);
   }
 
   // Method to check keyboard input and apply forces
   checkKeys() {
-    let forceMagnitude = 12;
+    //let forceMagnitude = 12;
     
-    if (keyIsDown(LEFT_ARROW))  this.applyForce(createVector(-forceMagnitude, 0));
-    if (keyIsDown(RIGHT_ARROW)) this.applyForce(createVector(forceMagnitude, 0));
-    if (keyIsDown(UP_ARROW))    this.applyForce(createVector(0, -forceMagnitude));
-    if (keyIsDown(DOWN_ARROW))  this.applyForce(createVector(0, forceMagnitude));
+    if (keyIsDown(LEFT_ARROW))  this.applyForce(createVector(-this.speed, 0));
+    if (keyIsDown(RIGHT_ARROW)) this.applyForce(createVector(this.speed, 0));
+    if (keyIsDown(UP_ARROW))    this.applyForce(createVector(0, -this.speed));
+    if (keyIsDown(DOWN_ARROW))  this.applyForce(createVector(0, this.speed));
   }
 
   // The "Force" pattern: Force adds to Acceleration
@@ -59,19 +78,42 @@ class Ball {
   }
 
   loopEdges() {
-    if(this.pos.x < -width) {
+    if(this.pos.x < 0) {
       this.pos.x = width;
     } else if(this.pos.x > width) {
-      this.pos.x = -width;
-    } else if(this.pos.y < -height) {
+      this.pos.x = 0;
+    }
+    if(this.pos.y < 0) {
       this.pos.y = height;
     } else if(this.pos.y > height) {
-      this.pos.y = -height;
+      this.pos.y = 0;
     }
+
+
+    // if(this.pos.x + (this.radius / 2) < 0) {
+    //   this.pos.x = width + (this.radius / 2);
+    // } else if(this.pos.x - (this.radius / 2) > width) {
+    //   this.pos.x = 0 - (this.radius / 2);
+    // }
+    // if(this.pos.y + (this.radius / 2) < 0) {
+    //   this.pos.y = height + (this.radius / 2);
+    // } else if(this.pos.y - (this.radius / 2) > height) {
+    //   this.pos.y = 0 - (this.radius / 2);
+    // }
+  }
+
+  dvdEdges() {
+    if(this.pos.x < 0 || this.pos.x > width) {
+      this.vel.x *= -1;
+    }
+    if(this.pos.y < 0 || this.pos.y > height) {
+      this.vel.y *= -1;
+    }
+
   }
 
   display() {
-    fill(255, 150, 0);
+    fill(this.red, this.green, this.blue);
     noStroke();
     ellipse(this.pos.x, this.pos.y, this.r);
   }
