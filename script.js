@@ -1,12 +1,13 @@
 //preview: python -m http.server
 
 let ballsArr = [];
+let obstacleArr = [];
 
 function setup() {
   createCanvas(windowWidth-100, windowHeight-100);
   background(30);
-  for(let i = 0; i < 50; i++) {
-    ballsArr.push(new Ball(random(width), random(height), random(200), random(255), random(255), random(255), random(-5, 15)));
+  for(let i = 0; i < 5; i++) {
+    ballsArr.push(new Ball(random(width), random(height), random(200), random(255), random(255), random(255), random(1, 10)));
   }
   
   //myBall = new Ball(width / 2, height / 2, 40);
@@ -17,10 +18,33 @@ function draw() {
   for(let i = 0; i < ballsArr.length; i++) {
     ballsArr[i].update();
     ballsArr[i].checkKeys();
-    ballsArr[i].loopEdges();
-    //ballsArr[i].dvdEdges();
+    //ballsArr[i].loopEdges();
+    ballsArr[i].dvdEdges();
     ballsArr[i].display();
+
+
+    for(let j = 0; j < ballsArr.length; j++){
+
+      if(i != j && ballsArr[i].pos.dist(ballsArr[j].pos) < ballsArr[i].rad){
+        
+	      ballsArr[i].vel.x *= -1;
+        ballsArr[i].vel.y *= -1;
+        ballsArr[j].vel.x *= -1;
+        ballsArr[j].vel.y *= -1;
+
+      }
+    }
   }
+
+  if (frameCount % 100 == 0) {
+    obstacleArr.push(new Obstacle(random(width), random(height), random(100), random(100)))
+  }
+
+  for(let i = 0; i < obstacleArr.length; i++) {
+    obstacleArr[i].pos.x += i;
+    obstacleArr[i].display();
+  }
+
   // myBall.update();   // Calculate physics
   // myBall.checkKeys(); // Check for keyboard input
   // myBall.loopEdges();
@@ -39,10 +63,6 @@ class Ball {
     this.red = r;
     this.green = g;
     this.blue = b;
-    // console.log("------")
-    // console.log(r);
-    // console.log(g);
-    // console.log(b);
   }
 
   // Method to check keyboard input and apply forces
@@ -53,6 +73,8 @@ class Ball {
     if (keyIsDown(RIGHT_ARROW)) this.applyForce(createVector(this.speed, 0));
     if (keyIsDown(UP_ARROW))    this.applyForce(createVector(0, -this.speed));
     if (keyIsDown(DOWN_ARROW))  this.applyForce(createVector(0, this.speed));
+
+    this.applyForce(createVector(random(-this.speed, this.speed), random(-this.speed, this.speed)))
   }
 
   // The "Force" pattern: Force adds to Acceleration
@@ -116,5 +138,20 @@ class Ball {
     fill(this.red, this.green, this.blue);
     noStroke();
     ellipse(this.pos.x, this.pos.y, this.r);
+  }
+}
+
+class Obstacle {
+  constructor(x, y, obsWidth, obsHeight) {
+    this.pos = createVector(x, y);
+    this.width = obsWidth;
+    this.height = obsHeight;
+    console.log("new rectangle just dropped");
+  }
+
+  display() {
+    fill(255, 0, 0);
+    noStroke();
+    rect(this.pos.x, this.pos.y, this.width, this.height)
   }
 }
