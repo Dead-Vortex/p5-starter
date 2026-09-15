@@ -6,7 +6,8 @@ let obstacleArr = [];
 function setup() {
   createCanvas(windowWidth-100, windowHeight-100);
   background(30);
-  for(let i = 0; i < 5; i++) {
+  const NUM_OF_BALLS = random(5, 50);
+  for(let i = 0; i < NUM_OF_BALLS; i++) {
     ballsArr.push(new Ball(random(width), random(height), random(200), random(255), random(255), random(255), random(1, 10)));
   }
   
@@ -41,7 +42,8 @@ function draw() {
   }
 
   for(let i = 0; i < obstacleArr.length; i++) {
-    obstacleArr[i].pos.x += i;
+    obstacleArr[i].pos.x += i + 1;
+    obstacleArr[i].loopEdges();
     obstacleArr[i].display();
   }
 
@@ -153,5 +155,19 @@ class Obstacle {
     fill(255, 0, 0);
     noStroke();
     rect(this.pos.x, this.pos.y, this.width, this.height)
+  }
+
+  loopEdges() {
+    if(this.pos.x < 0) {
+      this.pos.x = width;
+    } else if(this.pos.x > width) {
+      this.pos.x = 0;
+    }
+    //console.log(this.pos)
+    // if(this.pos.y < 0) {
+    //   this.pos.y = height;
+    // } else if(this.pos.y > height) {
+    //   this.pos.y = 0;
+    // }  
   }
 }
